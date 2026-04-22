@@ -1,8 +1,9 @@
-import Image from 'next/image';
+/* eslint-disable @next/next/no-img-element */
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import '@/lib/gsap-setup';
+import { publicPath } from '@/lib/publicPath';
 import styles from './HouseFacadeScene.module.css';
 
 interface SceneZoomTransitionProps {
@@ -57,11 +58,9 @@ export default function SceneZoomTransition({ onComplete }: SceneZoomTransitionP
   return (
     <section ref={containerRef} className={styles.transitionScene} aria-label="Zoom ins Badezimmer" aria-live="polite">
       <div ref={houseRef} className={styles.transitionHouse}>
-        <Image
-          src="/assets/house_closed.svg"
+        <img
+          src={publicPath('/assets/house_closed.svg')}
           alt="Zoom auf das Hausfenster"
-          width={1295}
-          height={1224}
           className={styles.transitionHouseImage}
         />
       </div>

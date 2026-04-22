@@ -31,6 +31,10 @@
 }
 
 .houseGraphic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   user-select: none;
   pointer-events: none;
@@ -41,6 +45,10 @@
 }
 
 .windowGraphic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   user-select: none;
   pointer-events: none;
@@ -72,6 +80,7 @@
 .transitionHouseImage {
   width: 100%;
   height: auto;
+  display: block;
   object-fit: contain;
 }
 

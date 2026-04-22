@@ -1,11 +1,13 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
-import Image from 'next/image';
 import { type KeyboardEvent, type PointerEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { publicPath } from '@/lib/publicPath';
 import styles from './BathtubFillInteraction.module.css';
 
 const FULL_BATH_LITERS = 160;
 const MAX_MONTHLY_LITERS = FULL_BATH_LITERS * 8;
+const DEFAULT_FILL_LEVEL = 8;
 const litersFormatter = new Intl.NumberFormat('de-DE');
 
 const BATH_FREQUENCIES = [
@@ -27,22 +29,40 @@ type DeviceOrientationEventWithPermission = typeof DeviceOrientationEvent & {
 export default function BathtubFillInteraction() {
   const waterClipId = useId().replace(/:/g, '');
   const waterGradientId = `${waterClipId}-water-gradient`;
-  const [fillLevel, setFillLevel] = useState(8);
+  const [fillLevel, setFillLevel] = useState(0);
   const [bathFrequencyId, setBathFrequencyId] = useState<BathFrequencyId>('monthly');
-  const [tiltState, setTiltState] = useState<'idle' | 'enabled' | 'blocked'>('idle');
+  const [tiltState, setTiltState] = useState<'idle' | 'enabled' | 'blocked' | 'unsupported'>('idle');
+  const [needsPermission, setNeedsPermission] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const controlRef = useRef<HTMLDivElement | null>(null);
   const fillLevelRef = useRef(fillLevel);
   const isDraggingRef = useRef(false);
+  const dragStartYRef = useRef(0);
+  const dragStartFillRef = useRef(fillLevel);
   const tiltBaselineRef = useRef<number | null>(null);
   const tiltFillBaselineRef = useRef(fillLevel);
+  const tiltSmoothedRef = useRef<number | null>(null);
+  const hasUserInteractedRef = useRef(false);
+  const [tiltPaused, setTiltPaused] = useState(false);
 
   const updateFillLevel = useCallback((nextFillLevel: number) => {
     const clampedFillLevel = clampFillLevel(nextFillLevel);
+    const previousFillLevel = fillLevelRef.current;
+
+    if (
+      clampedFillLevel !== previousFillLevel &&
+      (clampedFillLevel === 0 || clampedFillLevel === 100) &&
+      typeof navigator !== 'undefined' &&
+      typeof navigator.vibrate === 'function'
+    ) {
+      navigator.vibrate(12);
+    }
+
     fillLevelRef.current = clampedFillLevel;
     setFillLevel(clampedFillLevel);
   }, []);
 
-  const updateFillFromPointer = useCallback(
+  const updateFillFromDrag = useCallback(
     (clientY: number) => {
       const controlRect = controlRef.current?.getBoundingClientRect();
 
@@ -50,14 +70,15 @@ export default function BathtubFillInteraction() {
         return;
       }
 
-      updateFillLevel(((controlRect.bottom - clientY) / controlRect.height) * 100);
+      const dragDelta = ((dragStartYRef.current - clientY) / controlRect.height) * 100;
+      updateFillLevel(dragStartFillRef.current + dragDelta);
     },
     [updateFillLevel],
   );
 
   const requestTiltAccess = useCallback(() => {
     if (typeof window === 'undefined' || !('DeviceOrientationEvent' in window)) {
-      setTiltState('blocked');
+      setTiltState('unsupported');
       return;
     }
 
@@ -67,20 +88,98 @@ export default function BathtubFillInteraction() {
 
     if (typeof orientationEvent.requestPermission !== 'function') {
       setTiltState('enabled');
+      setNeedsPermission(false);
       return;
     }
 
     void orientationEvent
       .requestPermission()
-      .then((permissionState) => setTiltState(permissionState === 'granted' ? 'enabled' : 'blocked'))
+      .then((permissionState) => {
+        if (permissionState === 'granted') {
+          setTiltState('enabled');
+          setNeedsPermission(false);
+        } else {
+          setTiltState('blocked');
+        }
+      })
       .catch(() => setTiltState('blocked'));
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    queueMicrotask(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      if (typeof window === 'undefined' || !('DeviceOrientationEvent' in window)) {
+        setTiltState('unsupported');
+        return;
+      }
+
+      const orientationEvent = window.DeviceOrientationEvent as DeviceOrientationEventWithPermission;
+
+      if (typeof orientationEvent.requestPermission === 'function') {
+        setNeedsPermission(true);
+      } else {
+        tiltBaselineRef.current = null;
+        tiltFillBaselineRef.current = fillLevelRef.current;
+        setTiltState('enabled');
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const introTarget = DEFAULT_FILL_LEVEL;
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      fillLevelRef.current = introTarget;
+      setFillLevel(introTarget);
+      return undefined;
+    }
+
+    const duration = 650;
+    const start = performance.now();
+    let frame = 0;
+
+    const step = (now: number) => {
+      if (hasUserInteractedRef.current) {
+        return;
+      }
+
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const next = eased * introTarget;
+      fillLevelRef.current = next;
+      setFillLevel(next);
+
+      if (progress < 1) {
+        frame = requestAnimationFrame(step);
+      }
+    };
+
+    frame = requestAnimationFrame(step);
+
+    return () => {
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    hasUserInteractedRef.current = true;
+    setHasInteracted(true);
     isDraggingRef.current = true;
+    dragStartYRef.current = event.clientY;
+    dragStartFillRef.current = fillLevelRef.current;
     event.currentTarget.setPointerCapture(event.pointerId);
-    requestTiltAccess();
-    updateFillFromPointer(event.clientY);
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -88,7 +187,7 @@ export default function BathtubFillInteraction() {
       return;
     }
 
-    updateFillFromPointer(event.clientY);
+    updateFillFromDrag(event.clientY);
   };
 
   const handlePointerEnd = (event: PointerEvent<HTMLDivElement>) => {
@@ -118,7 +217,8 @@ export default function BathtubFillInteraction() {
     }
 
     event.preventDefault();
-    requestTiltAccess();
+    hasUserInteractedRef.current = true;
+    setHasInteracted(true);
 
     if (action === 'min') {
       updateFillLevel(0);
@@ -133,25 +233,67 @@ export default function BathtubFillInteraction() {
     updateFillLevel(fillLevelRef.current + action);
   };
 
+  const handleReset = () => {
+    hasUserInteractedRef.current = true;
+    setHasInteracted(true);
+    tiltBaselineRef.current = null;
+    tiltFillBaselineRef.current = DEFAULT_FILL_LEVEL;
+    updateFillLevel(DEFAULT_FILL_LEVEL);
+  };
+
   useEffect(() => {
+    if (tiltState !== 'enabled') {
+      return undefined;
+    }
+
     if (typeof window === 'undefined' || !('DeviceOrientationEvent' in window)) {
       return undefined;
     }
 
+    tiltBaselineRef.current = null;
+    tiltSmoothedRef.current = null;
+
+    const TILT_SMOOTHING = 0.18;
+    const TILT_DEAD_ZONE_DEG = 1.5;
+    const TILT_CURVE = 0.11;
+    const TILT_MAX_DEG = 35;
+
     const handleDeviceOrientation = (event: DeviceOrientationEvent) => {
-      if (event.beta === null) {
+      if (event.beta === null || tiltPaused) {
         return;
       }
 
-      setTiltState('enabled');
+      const rawBeta = event.beta;
+      const previousSmoothed = tiltSmoothedRef.current;
+      const smoothedBeta =
+        previousSmoothed === null
+          ? rawBeta
+          : previousSmoothed + (rawBeta - previousSmoothed) * TILT_SMOOTHING;
+      tiltSmoothedRef.current = smoothedBeta;
 
       if (tiltBaselineRef.current === null) {
-        tiltBaselineRef.current = event.beta;
+        tiltBaselineRef.current = smoothedBeta;
         tiltFillBaselineRef.current = fillLevelRef.current;
+        return;
       }
 
-      const tiltDelta = event.beta - tiltBaselineRef.current;
-      updateFillLevel(tiltFillBaselineRef.current + tiltDelta * 1.35);
+      const rawDelta = smoothedBeta - tiltBaselineRef.current;
+      const clampedDelta = Math.max(-TILT_MAX_DEG, Math.min(TILT_MAX_DEG, rawDelta));
+      const absDelta = Math.abs(clampedDelta);
+
+      if (absDelta < TILT_DEAD_ZONE_DEG) {
+        return;
+      }
+
+      if (Math.abs(rawDelta) > 2) {
+        hasUserInteractedRef.current = true;
+        setHasInteracted(true);
+      }
+
+      const effectiveDeg = absDelta - TILT_DEAD_ZONE_DEG;
+      const shapedDelta = Math.sign(clampedDelta) * effectiveDeg * effectiveDeg * TILT_CURVE;
+
+      updateFillLevel(tiltFillBaselineRef.current + shapedDelta);
     };
 
     window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
@@ -159,33 +301,51 @@ export default function BathtubFillInteraction() {
     return () => {
       window.removeEventListener('deviceorientation', handleDeviceOrientation);
     };
-  }, [updateFillLevel]);
+  }, [tiltState, tiltPaused, updateFillLevel]);
 
-  const statusCopy = 'Ziehe nach oben oder kippe dein Smartphone.';
+  const statusCopy =
+    tiltState === 'enabled' && tiltPaused
+      ? 'Neigung pausiert. Ziehe die Wanne oder setze die Neigung fort.'
+      : tiltState === 'enabled'
+      ? 'Neigung aktiv – kippe dein Smartphone, um den Wasserstand zu ändern.'
+      : tiltState === 'blocked'
+      ? 'Zugriff auf die Neigung wurde abgelehnt. Bitte in den Safari-Einstellungen unter „Bewegung & Ausrichtung“ erlauben.'
+      : tiltState === 'unsupported'
+      ? 'Neigung ist auf diesem Gerät nicht verfügbar. Ziehe die Wanne nach oben oder unten.'
+      : needsPermission
+      ? 'Tippe auf „Neigung aktivieren“, um dein Smartphone als Sensor zu nutzen – oder ziehe die Wanne.'
+      : 'Ziehe die Wanne nach oben oder unten.';
   const selectedFrequency =
     BATH_FREQUENCIES.find((frequency) => frequency.id === bathFrequencyId) ?? BATH_FREQUENCIES[0];
-  const bathLiters = Math.round((fillLevel / 100) * FULL_BATH_LITERS);
-  const monthlyLiters = Math.round(bathLiters * selectedFrequency.monthlyBaths);
+  const bathLitersRaw = (fillLevel / 100) * FULL_BATH_LITERS;
+  const bathLiters = Math.round(bathLitersRaw / 5) * 5;
+  const monthlyLiters = Math.round((bathLiters * selectedFrequency.monthlyBaths) / 5) * 5;
   const bathLitersLabel = litersFormatter.format(bathLiters);
   const monthlyLitersLabel = litersFormatter.format(monthlyLiters);
-  const bathBarPercent = Math.round((bathLiters / FULL_BATH_LITERS) * 100);
-  const monthlyBarPercent = Math.min(100, Math.round((monthlyLiters / MAX_MONTHLY_LITERS) * 100));
+  const bathBarPercent = Math.round((bathLitersRaw / FULL_BATH_LITERS) * 100);
+  const monthlyBarPercent = Math.min(
+    100,
+    Math.round((bathLitersRaw * selectedFrequency.monthlyBaths) / MAX_MONTHLY_LITERS * 100),
+  );
   const waterTopY = 132 - (fillLevel / 100) * 58;
   const waterHeight = 140 - waterTopY;
 
   return (
     <div className={styles.bathtubInteraction}>
-      <div className={styles.statusPanel} aria-live="polite">
-        <div
-          className={styles.consumptionChart}
-          aria-label={`Wasserverbrauch: ${bathLitersLabel} Liter pro Bad und ${monthlyLitersLabel} Liter pro Monat.`}
-        >
+      <div className={styles.statusPanel}>
+        <div className={styles.consumptionChart}>
           <div className={styles.chartHeader}>
             <span className={styles.statusLabel}>Wasserverbrauch</span>
             <span className={styles.chartScale}>volle Wanne: {FULL_BATH_LITERS} l</span>
           </div>
 
-          <div className={styles.chartRows}>
+          <div
+            className={styles.chartRows}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={`Wasserverbrauch: ${bathLitersLabel} Liter pro Bad und ${monthlyLitersLabel} Liter pro Monat.`}
+          >
             <div className={styles.chartRow}>
               <div className={styles.chartMeta}>
                 <span className={styles.chartLabel}>pro Bad</span>
@@ -252,6 +412,9 @@ export default function BathtubFillInteraction() {
         onPointerCancel={handlePointerEnd}
         onKeyDown={handleKeyDown}
       >
+        <span className={styles.fillBadge} aria-hidden="true">
+          {fillLevel}%
+        </span>
         <div className={styles.bathtubShadow} aria-hidden="true" />
         <div className={styles.bathtubIllustration}>
           <svg
@@ -283,23 +446,53 @@ export default function BathtubFillInteraction() {
               <ellipse className={styles.waterSurfaceSvg} cx="101.6" cy={waterTopY} rx="88" ry="3.2" />
             </g>
           </svg>
-          <Image
-            src="/assets/bathtube_base.svg"
+          <img
+            src={publicPath('/assets/bathtube_base.svg')}
             alt=""
-            fill
-            priority
-            sizes="(max-width: 900px) 82vw, 620px"
             className={styles.bathtubImage}
           />
         </div>
       </div>
 
-      <p id="bathtub-fill-hint" className={styles.interactionHint}>
-        Smartphone kippen. Auf Desktop von unten nach oben ziehen.
-        {tiltState === 'blocked' ? ' Neigung ist auf diesem Gerät nicht verfügbar.' : ''}
-        {' '}
-        {statusCopy}
-      </p>
+      <div className={styles.hintRow}>
+        <div className={styles.actionButtons}>
+          {needsPermission && tiltState !== 'enabled' ? (
+            <button
+              type="button"
+              className={styles.tiltPermissionButton}
+              onClick={requestTiltAccess}
+            >
+              Neigung aktivieren
+            </button>
+          ) : null}
+          {tiltState === 'enabled' ? (
+            <button
+              type="button"
+              className={styles.tiltToggleButton}
+              onClick={() => setTiltPaused((paused) => !paused)}
+              aria-pressed={tiltPaused}
+            >
+              {tiltPaused ? 'Neigung fortsetzen' : 'Neigung pausieren'}
+            </button>
+          ) : null}
+          {hasInteracted && fillLevel !== DEFAULT_FILL_LEVEL ? (
+            <button
+              type="button"
+              className={styles.resetButton}
+              onClick={handleReset}
+              aria-label="Wasserstand zurücksetzen"
+            >
+              Zurücksetzen
+            </button>
+          ) : null}
+        </div>
+        <p
+          id="bathtub-fill-hint"
+          className={`${styles.interactionHint} ${hasInteracted ? styles.interactionHintMuted : ''}`}
+        >
+          {statusCopy}
+        </p>
+      </div>
     </div>
   );
 }

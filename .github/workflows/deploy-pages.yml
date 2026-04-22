@@ -33,6 +33,8 @@ jobs:
         run: npm ci
 
       - name: Build static site
+        env:
+          NEXT_PUBLIC_BASE_PATH: /balance_ui_tesbed
         run: npm run build:pages
 
       - name: Upload Pages artifact
