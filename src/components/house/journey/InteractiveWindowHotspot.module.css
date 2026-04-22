@@ -1,0 +1,143 @@
+.windowHotspotButton {
+  position: absolute;
+  left: 14.8%;
+  top: 34.3%;
+  width: 16.5%;
+  height: 15.1%;
+  z-index: 4;
+
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  isolation: isolate;
+}
+
+.windowHotspotGlow,
+.windowHotspotInner,
+.windowHotspotShimmer {
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.windowHotspotGlow {
+  inset: 5%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(222, 248, 253, 0.42) 0%,
+    rgba(139, 211, 230, 0.18) 54%,
+    rgba(139, 211, 230, 0) 100%
+  );
+  opacity: 0.52;
+  transform: scale(1);
+  transition: opacity 180ms ease, filter 180ms ease;
+}
+
+.windowHotspotInner {
+  inset: 8%;
+  background: linear-gradient(180deg, rgba(222, 248, 253, 0.18), rgba(111, 177, 198, 0.1));
+  opacity: 0.5;
+  transition: opacity 180ms ease, background 180ms ease;
+}
+
+.windowHotspotShimmer {
+  inset: 6%;
+  overflow: hidden;
+  opacity: 0.62;
+}
+
+.windowHotspotShimmer::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -62%;
+  width: 30%;
+  height: 160%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.14) 28%,
+    rgba(255, 255, 255, 0.42) 50%,
+    rgba(139, 211, 230, 0.12) 72%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  transform: translateX(0) rotate(12deg);
+  animation: windowShimmerSweep 5.8s ease-in-out infinite;
+}
+
+.windowHotspotButton:hover .windowHotspotGlow,
+.windowHotspotButton:focus-visible .windowHotspotGlow {
+  opacity: 0.78;
+  filter: brightness(1.08);
+}
+
+.windowHotspotButton:hover .windowHotspotInner,
+.windowHotspotButton:focus-visible .windowHotspotInner {
+  background: linear-gradient(180deg, rgba(222, 248, 253, 0.28), rgba(111, 177, 198, 0.16));
+  opacity: 0.74;
+}
+
+.windowHotspotButton:active .windowHotspotGlow {
+  opacity: 0.86;
+}
+
+.windowHotspotButton:focus-visible {
+  outline: 2px solid rgba(36, 63, 72, 0.52);
+  outline-offset: 5px;
+}
+
+.windowHotspotButton:disabled {
+  cursor: default;
+}
+
+.windowHotspotButton:disabled .windowHotspotGlow,
+.windowHotspotButton:disabled .windowHotspotInner,
+.windowHotspotButton:disabled .windowHotspotShimmer::before {
+  animation: none;
+  opacity: 0.2;
+}
+
+@keyframes windowShimmerSweep {
+  0%,
+  72%,
+  100% {
+    opacity: 0;
+    transform: translateX(0) rotate(12deg);
+  }
+
+  78% {
+    opacity: 0.18;
+  }
+
+  87% {
+    opacity: 0.46;
+    transform: translateX(390%) rotate(12deg);
+  }
+
+  95% {
+    opacity: 0;
+    transform: translateX(420%) rotate(12deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .windowHotspotButton {
+    border-radius: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .windowHotspotGlow,
+  .windowHotspotInner,
+  .windowHotspotShimmer::before {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

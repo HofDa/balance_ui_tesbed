@@ -1,0 +1,210 @@
+.panelBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(36, 63, 72, 0.18);
+  pointer-events: none;
+}
+
+.questionPanel {
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  border-radius: var(--bn-radius);
+  border: 1px solid rgba(36, 63, 72, 0.14);
+  background: var(--bn-paper);
+  color: var(--bn-ink);
+  padding: 1.1rem 1.15rem;
+  box-shadow: var(--bn-shadow-card);
+  display: grid;
+  gap: 0.85rem;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.panelTitle {
+  margin: 0;
+  font-family: var(--bn-font-display);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--bn-green-800);
+  letter-spacing: 0.01em;
+}
+
+.panelHelp {
+  margin: 0.32rem 0 0;
+  font-size: 0.85rem;
+  color: var(--bn-ink-soft);
+}
+
+.closePanelButton {
+  border: 1px solid rgba(36, 63, 72, 0.22);
+  background: var(--bn-cream-soft);
+  color: var(--bn-green-800);
+  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  line-height: 1;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 160ms ease;
+}
+
+.closePanelButton:hover {
+  background: var(--bn-cream);
+}
+
+.closePanelButton:focus-visible {
+  outline: 3px solid var(--bn-green-300);
+  outline-offset: 2px;
+}
+
+.optionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.46rem;
+}
+
+.optionButton {
+  border-radius: 999px;
+  border: 1px solid rgba(36, 63, 72, 0.22);
+  background: var(--bn-paper);
+  color: var(--bn-green-800);
+  font-size: 0.84rem;
+  font-weight: 500;
+  padding: 0.46rem 0.82rem;
+  cursor: pointer;
+  transition: transform 170ms ease, background-color 170ms ease, border-color 170ms ease,
+    color 170ms ease;
+}
+
+.optionButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--bn-green-700);
+  background: var(--bn-green-100);
+}
+
+.optionButtonSelected {
+  border-color: var(--bn-green-800);
+  background: var(--bn-green-800);
+  color: var(--bn-paper);
+}
+
+.segmentedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.segmentButton {
+  border-radius: 12px;
+  border: 1px solid rgba(36, 63, 72, 0.22);
+  background: var(--bn-paper);
+  color: var(--bn-ink);
+  padding: 0.6rem 0.45rem;
+  cursor: pointer;
+  transition: border-color 170ms ease, background-color 170ms ease, color 170ms ease;
+}
+
+.segmentButton strong {
+  display: block;
+  font-size: 0.86rem;
+  color: var(--bn-green-800);
+}
+
+.segmentButton span {
+  display: block;
+  font-size: 0.74rem;
+  opacity: 0.75;
+  margin-top: 0.15rem;
+}
+
+.segmentButtonSelected {
+  border-color: var(--bn-green-800);
+  background: var(--bn-green-800);
+  color: var(--bn-paper);
+}
+
+.segmentButtonSelected strong,
+.segmentButtonSelected span {
+  color: var(--bn-paper);
+  opacity: 1;
+}
+
+.sliderWrap {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.sliderInput {
+  accent-color: var(--bn-green-700);
+  width: 100%;
+}
+
+.sliderMeta {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--bn-ink-soft);
+}
+
+.panelActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.microcopy {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--bn-coral);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.saveButton {
+  border: 1px solid var(--bn-green-800);
+  border-radius: 999px;
+  background: var(--bn-green-800);
+  color: var(--bn-paper);
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: var(--bn-green-700);
+  transform: translateY(-1px);
+}
+
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .questionPanel {
+    left: 0.7rem;
+    right: 0.7rem;
+    bottom: 0.8rem;
+  }
+
+  .segmentedGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .optionButton,
+  .segmentButton {
+    transition-duration: 0.01ms !important;
+  }
+}

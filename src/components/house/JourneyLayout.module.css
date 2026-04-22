@@ -1,0 +1,26 @@
+.journeyRoot {
+  position: relative;
+  width: min(1080px, 94vw);
+  height: min(780px, 92vh);
+  border-radius: var(--bn-radius-lg);
+  overflow: hidden;
+  color: var(--bn-ink);
+  background: var(--bn-paper);
+  box-shadow:
+    var(--bn-shadow-card),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(36, 63, 72, 0.08);
+}
+
+.sceneFrame {
+  position: absolute;
+  inset: 0;
+}
+
+@media (max-width: 900px) {
+  .journeyRoot {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+}

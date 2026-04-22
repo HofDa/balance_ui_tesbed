@@ -1,0 +1,142 @@
+.facadeScene {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--bn-paper);
+}
+
+.facadeViewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--bn-paper);
+}
+
+.cameraStage {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  z-index: 1;
+}
+
+.housePlane {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: min(80%, 720px, 91vh);
+  aspect-ratio: 1295 / 1224;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.houseGraphic {
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  filter:
+    drop-shadow(0 18px 22px rgba(36, 63, 72, 0.16))
+    drop-shadow(0 4px 10px rgba(36, 63, 72, 0.08));
+  z-index: 1;
+}
+
+.windowGraphic {
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  z-index: 3;
+  transform-origin: 23.05% 41.85%;
+  animation: facadeWindowWiggle 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.transitionScene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bn-paper);
+}
+
+.transitionHouse {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(86%, 690px);
+  height: auto;
+  transform-origin: 34% 27%;
+  filter:
+    drop-shadow(0 18px 24px rgba(36, 63, 72, 0.16))
+    drop-shadow(0 4px 10px rgba(36, 63, 72, 0.08));
+}
+
+.transitionHouseImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.transitionOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.transitionText {
+  position: absolute;
+  left: 50%;
+  bottom: 2.2rem;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: var(--bn-font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--bn-green-800);
+}
+
+@media (max-width: 900px) {
+  .houseGraphic {
+    filter:
+      drop-shadow(0 14px 20px rgba(36, 63, 72, 0.14))
+      drop-shadow(0 3px 8px rgba(36, 63, 72, 0.08));
+  }
+
+  .housePlane {
+    top: 59%;
+    width: min(92%, 620px);
+  }
+}
+
+@keyframes facadeWindowWiggle {
+  0%,
+  70%,
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+
+  73% {
+    transform: rotate(0deg) translate3d(0, -2px, 0);
+  }
+
+  75% {
+    transform: rotate(-1.15deg) translate3d(-0.7px, -1.2px, 0);
+  }
+
+  80% {
+    transform: rotate(1deg) translate3d(0.7px, 0.8px, 0);
+  }
+
+  85% {
+    transform: rotate(-0.65deg) translate3d(-0.35px, -0.4px, 0);
+  }
+
+  90% {
+    transform: rotate(0.35deg) translate3d(0.25px, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .windowGraphic {
+    animation: none !important;
+  }
+}

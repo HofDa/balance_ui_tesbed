@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Legacy token names kept for compatibility; values are neutral blue-grey. */
+  --bn-green-900: #172a31;
+  --bn-green-800: #243f48;
+  --bn-green-700: #3f6872;
+  --bn-green-600: #527d88;
+  --bn-green-500: #7da8b0;
+  --bn-green-300: #c4dce0;
+  --bn-green-100: #e4eef0;
+
+  /* Neutral surfaces */
+  --bn-cream:     #e8edf0;
+  --bn-cream-soft:#f4f7f8;
+  --bn-paper:     #ffffff;
+  --bn-ink:       #172329;
+  --bn-ink-soft:  #465962;
+
+  /* Accents */
+  --bn-coral:     #e58aa1;     /* "Nils Bertol" pink in deck footer */
+  --bn-water:     #6fb1c6;     /* water/biodiversity blue */
+
+  /* Tokens */
+  --bn-bg:           var(--bn-paper);
+  --bn-fg:           var(--bn-ink);
+  --bn-surface:      var(--bn-cream-soft);
+  --bn-surface-alt:  var(--bn-cream);
+  --bn-primary:      var(--bn-green-800);
+  --bn-primary-ink:  #ffffff;
+  --bn-radius:       16px;
+  --bn-radius-lg:    28px;
+  --bn-shadow-soft:  0 12px 30px rgba(36, 63, 72, 0.12);
+  --bn-shadow-card:  0 18px 44px rgba(36, 63, 72, 0.18);
+
+  /* Typography */
+  --bn-font-display: var(--font-display-mono), 'Major Mono Display', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --bn-font-body:    var(--font-geist-sans), 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bn-bg);
+  color: var(--bn-fg);
+  font-family: var(--bn-font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--bn-font-display);
+  color: var(--bn-green-800);
+  letter-spacing: 0.01em;
+}
