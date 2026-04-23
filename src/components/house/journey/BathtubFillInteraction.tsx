@@ -442,49 +442,52 @@ export default function BathtubFillInteraction() {
               aria-pressed={tiltPaused}
               aria-label={tiltPaused ? 'Wasserstand entsperren' : 'Wasserstand sperren'}
             >
-              {tiltPaused ? (
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <svg
+                className={styles.tiltPauseFabSvg}
+                viewBox="0 0 48 36"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <g className={`${styles.tiltPauseFabLever} ${tiltPaused ? styles.tiltPauseFabLeverClosed : ''}`}>
+                  <path
+                    className={styles.tiltPauseFabBody}
+                    d="M2 14 H20 A2 2 0 0 1 20 22 H2 A2 2 0 0 1 2 14 Z"
+                    fill="#ffffff"
+                    stroke="#172329"
+                    strokeWidth="2.4"
+                    strokeLinejoin="round"
+                  />
+                </g>
+                <circle
+                  className={styles.tiltPauseFabBody}
+                  cx="32"
+                  cy="18"
+                  r="14"
+                  fill="#ffffff"
+                  stroke="#172329"
+                  strokeWidth="2.4"
+                />
+                <g transform="translate(32.6 18)">
                   <rect
-                    x="5.5"
-                    y="10.5"
-                    width="13"
-                    height="9.5"
-                    rx="1.8"
+                    x="-5.6"
+                    y="-0.6"
+                    width="11.2"
+                    height="8.4"
+                    rx="1.6"
                     fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
+                    stroke="#172329"
+                    strokeWidth="1.9"
                   />
                   <path
-                    d="M8 10.5V7.5a4 4 0 0 1 8 0V10.5"
+                    d={tiltPaused ? 'M-3.3 -0.6 V-3.8 a3.3 3.3 0 0 1 6.6 0 V-0.6' : 'M-3.3 -0.6 V-3.8 a3.3 3.3 0 0 1 6.2 -1.6'}
                     fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
+                    stroke="#172329"
+                    strokeWidth="1.9"
                     strokeLinecap="round"
                   />
-                  <circle cx="12" cy="15" r="1.2" fill="currentColor" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <rect
-                    x="5.5"
-                    y="10.5"
-                    width="13"
-                    height="9.5"
-                    rx="1.8"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  />
-                  <path
-                    d="M8 10.5V7.5a4 4 0 0 1 7.5-1.9"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="12" cy="15" r="1.2" fill="currentColor" />
-                </svg>
-              )}
+                  <circle cx="0" cy="3.6" r="1.05" fill="#172329" />
+                </g>
+              </svg>
             </button>
           ) : null}
           <svg
@@ -522,6 +525,12 @@ export default function BathtubFillInteraction() {
             className={styles.bathtubImage}
           />
         </div>
+        <p
+          id="bathtub-fill-hint"
+          className={`${styles.interactionHint} ${hasInteracted ? styles.interactionHintMuted : ''}`}
+        >
+          {statusCopy}
+        </p>
       </div>
 
       <div className={styles.hintRow}>
@@ -546,12 +555,6 @@ export default function BathtubFillInteraction() {
             </button>
           ) : null}
         </div>
-        <p
-          id="bathtub-fill-hint"
-          className={`${styles.interactionHint} ${hasInteracted ? styles.interactionHintMuted : ''}`}
-        >
-          {statusCopy}
-        </p>
       </div>
     </div>
   );

@@ -192,8 +192,11 @@
 
 .fillControl {
   position: relative;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
   width: min(68vw, 620px);
   max-width: calc(100% - clamp(1rem, 4vw, 2.5rem));
   min-height: min(44vh, 430px);
@@ -244,43 +247,54 @@
 @media (max-width: 900px) and (pointer: coarse) {
   .tiltPauseFab {
     position: absolute;
-    left: 94%;
-    top: 39%;
+    left: 10%;
+    top: 22%;
     z-index: 5;
-    display: grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
+    display: block;
+    width: 3rem;
+    height: 2.15rem;
     padding: 0;
-    border: 1px solid rgba(49, 126, 158, 0.28);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--bn-green-800);
+    border: 0;
+    background: transparent;
+    color: #172329;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(36, 63, 72, 0.14);
-    backdrop-filter: blur(10px);
+    filter: drop-shadow(0 1.5px 0 rgba(23, 35, 41, 0.18));
     transform: translate(-50%, -50%);
-    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    transition: transform 160ms ease;
   }
 
   .tiltPauseFab:active {
     transform: translate(-50%, -50%) scale(0.96);
   }
 
-  .tiltPauseFab svg {
-    width: 1.1rem;
-    height: 1.1rem;
+  .tiltPauseFabSvg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
 
   .tiltPauseFab:focus-visible {
-    outline: 3px solid rgba(90, 174, 198, 0.45);
-    outline-offset: 2px;
+    outline: none;
   }
 
-  .tiltPauseFab[aria-pressed='true'] {
-    background: rgba(255, 227, 186, 0.95);
-    border-color: rgba(200, 140, 60, 0.55);
-    color: rgb(140, 88, 28);
+  .tiltPauseFab:focus-visible .tiltPauseFabSvg {
+    filter: drop-shadow(0 0 0 3px rgba(90, 174, 198, 0.6));
+  }
+
+  .tiltPauseFab[aria-pressed='true'] .tiltPauseFabBody {
+    fill: #ffe3ba;
+  }
+
+  .tiltPauseFabLever {
+    transform-box: fill-box;
+    transform-origin: 100% 50%;
+    transform: rotate(35deg);
+    transition: transform 260ms cubic-bezier(0.5, 0.1, 0.2, 1.1);
+  }
+
+  .tiltPauseFabLeverClosed {
+    transform: rotate(0deg);
   }
 
   .dragCue {
@@ -474,12 +488,17 @@
 }
 
 .interactionHint {
-  margin: 0;
-  max-width: 40rem;
+  margin: 0.2rem 0 0;
+  max-width: min(100%, 30rem);
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 6px 16px rgba(36, 63, 72, 0.08);
+  backdrop-filter: blur(10px);
   color: var(--bn-green-800);
-  font-size: clamp(0.88rem, 1.9vw, 0.98rem);
+  font-size: clamp(0.82rem, 1.7vw, 0.92rem);
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.35;
   text-align: center;
 }
 
