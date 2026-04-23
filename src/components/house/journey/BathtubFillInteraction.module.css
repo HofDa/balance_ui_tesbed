@@ -233,6 +233,104 @@
   font-variant-numeric: tabular-nums;
 }
 
+.tiltPauseFab {
+  display: none;
+}
+
+.dragCue {
+  display: none;
+}
+
+@media (max-width: 900px) and (pointer: coarse) {
+  .tiltPauseFab {
+    position: absolute;
+    left: 94%;
+    top: 39%;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid rgba(49, 126, 158, 0.28);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--bn-green-800);
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(36, 63, 72, 0.14);
+    backdrop-filter: blur(10px);
+    transform: translate(-50%, -50%);
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+
+  .tiltPauseFab:active {
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  .tiltPauseFab svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .tiltPauseFab:focus-visible {
+    outline: 3px solid rgba(90, 174, 198, 0.45);
+    outline-offset: 2px;
+  }
+
+  .tiltPauseFab[aria-pressed='true'] {
+    background: rgba(255, 227, 186, 0.95);
+    border-color: rgba(200, 140, 60, 0.55);
+    color: rgb(140, 88, 28);
+  }
+
+  .dragCue {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 4;
+    display: grid;
+    justify-items: center;
+    gap: 0.18rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--bn-green-800);
+    font-family: var(--bn-font-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 10px 24px rgba(36, 63, 72, 0.14);
+    backdrop-filter: blur(10px);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: dragCuePulse 1.9s ease-in-out infinite;
+  }
+
+  .dragCueArrow {
+    font-size: 0.95rem;
+    line-height: 1;
+    opacity: 0.8;
+  }
+
+  .dragCueLabel {
+    font-size: 0.82rem;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+}
+
+@keyframes dragCuePulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translate(-50%, -52%) scale(1.03);
+    opacity: 1;
+  }
+}
+
 .bathtubShadow {
   position: absolute;
   left: 17%;
@@ -310,8 +408,7 @@
   gap: 0.5rem;
 }
 
-.resetButton,
-.tiltToggleButton {
+.resetButton {
   appearance: none;
   border: 1px solid rgba(63, 104, 114, 0.26);
   border-radius: 999px;
@@ -325,28 +422,19 @@
   transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
-.resetButton:hover,
-.tiltToggleButton:hover {
+.resetButton:hover {
   transform: translateY(-1px);
   background: rgba(244, 250, 251, 0.92);
   border-color: rgba(49, 126, 158, 0.4);
 }
 
-.resetButton:active,
-.tiltToggleButton:active {
+.resetButton:active {
   transform: translateY(0);
 }
 
-.resetButton:focus-visible,
-.tiltToggleButton:focus-visible {
+.resetButton:focus-visible {
   outline: 3px solid rgba(90, 174, 198, 0.32);
   outline-offset: 2px;
-}
-
-.tiltToggleButton[aria-pressed='true'] {
-  background: rgba(255, 227, 186, 0.85);
-  border-color: rgba(200, 140, 60, 0.5);
-  color: rgb(140, 88, 28);
 }
 
 .interactionHintMuted {
@@ -388,8 +476,9 @@
 .interactionHint {
   margin: 0;
   max-width: 40rem;
-  color: var(--bn-ink-soft);
-  font-size: clamp(0.82rem, 1.8vw, 0.94rem);
+  color: var(--bn-green-800);
+  font-size: clamp(0.88rem, 1.9vw, 0.98rem);
+  font-weight: 600;
   line-height: 1.45;
   text-align: center;
 }

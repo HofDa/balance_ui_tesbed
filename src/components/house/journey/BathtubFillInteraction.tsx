@@ -305,7 +305,7 @@ export default function BathtubFillInteraction() {
 
   const statusCopy =
     tiltState === 'enabled' && tiltPaused
-      ? 'Neigung pausiert. Ziehe die Wanne oder setze die Neigung fort.'
+      ? 'Wasserstand gesperrt. Tippe erneut auf das Schloss, um ihn zu ändern.'
       : tiltState === 'enabled'
       ? 'Neigung aktiv – kippe dein Smartphone, um den Wasserstand zu ändern.'
       : tiltState === 'blocked'
@@ -315,6 +315,12 @@ export default function BathtubFillInteraction() {
       : needsPermission
       ? 'Tippe auf „Neigung aktivieren“, um dein Smartphone als Sensor zu nutzen – oder ziehe die Wanne.'
       : 'Ziehe die Wanne nach oben oder unten.';
+  const cueCopy =
+    tiltState === 'enabled' && !tiltPaused
+      ? 'Smartphone kippen'
+      : tiltState === 'enabled' && tiltPaused
+      ? 'Gesperrt'
+      : 'Ziehen';
   const selectedFrequency =
     BATH_FREQUENCIES.find((frequency) => frequency.id === bathFrequencyId) ?? BATH_FREQUENCIES[0];
   const bathLitersRaw = (fillLevel / 100) * FULL_BATH_LITERS;
@@ -415,8 +421,72 @@ export default function BathtubFillInteraction() {
         <span className={styles.fillBadge} aria-hidden="true">
           {fillLevel}%
         </span>
+        {!hasInteracted ? (
+          <div className={styles.dragCue} aria-hidden="true">
+            <span className={styles.dragCueArrow}>↑</span>
+            <span className={styles.dragCueLabel}>{cueCopy}</span>
+            <span className={styles.dragCueArrow}>↓</span>
+          </div>
+        ) : null}
         <div className={styles.bathtubShadow} aria-hidden="true" />
         <div className={styles.bathtubIllustration}>
+          {tiltState === 'enabled' ? (
+            <button
+              type="button"
+              className={styles.tiltPauseFab}
+              onClick={(event) => {
+                event.stopPropagation();
+                setTiltPaused((paused) => !paused);
+              }}
+              onPointerDown={(event) => event.stopPropagation()}
+              aria-pressed={tiltPaused}
+              aria-label={tiltPaused ? 'Wasserstand entsperren' : 'Wasserstand sperren'}
+            >
+              {tiltPaused ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <rect
+                    x="5.5"
+                    y="10.5"
+                    width="13"
+                    height="9.5"
+                    rx="1.8"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <path
+                    d="M8 10.5V7.5a4 4 0 0 1 8 0V10.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="12" cy="15" r="1.2" fill="currentColor" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <rect
+                    x="5.5"
+                    y="10.5"
+                    width="13"
+                    height="9.5"
+                    rx="1.8"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                  <path
+                    d="M8 10.5V7.5a4 4 0 0 1 7.5-1.9"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="12" cy="15" r="1.2" fill="currentColor" />
+                </svg>
+              )}
+            </button>
+          ) : null}
           <svg
             className={styles.waterSvg}
             viewBox="0 0 203.28313 154.30243"
@@ -463,16 +533,6 @@ export default function BathtubFillInteraction() {
               onClick={requestTiltAccess}
             >
               Neigung aktivieren
-            </button>
-          ) : null}
-          {tiltState === 'enabled' ? (
-            <button
-              type="button"
-              className={styles.tiltToggleButton}
-              onClick={() => setTiltPaused((paused) => !paused)}
-              aria-pressed={tiltPaused}
-            >
-              {tiltPaused ? 'Neigung fortsetzen' : 'Neigung pausieren'}
             </button>
           ) : null}
           {hasInteracted && fillLevel !== DEFAULT_FILL_LEVEL ? (
