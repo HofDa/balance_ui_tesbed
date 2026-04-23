@@ -240,7 +240,7 @@
   display: none;
 }
 
-.dragCue {
+.tubHud {
   display: none;
 }
 
@@ -297,51 +297,46 @@
     transform: rotate(0deg);
   }
 
-  .dragCue {
+  .tubHud {
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 62%;
     z-index: 4;
     display: grid;
     justify-items: center;
-    gap: 0.18rem;
-    padding: 0.5rem 0.85rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--bn-green-800);
-    font-family: var(--bn-font-body);
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    box-shadow: 0 10px 24px rgba(36, 63, 72, 0.14);
-    backdrop-filter: blur(10px);
+    gap: 0.1rem;
+    padding: 0;
+    color: #ffffff;
+    font-family: var(--bn-font-display);
+    text-align: center;
     transform: translate(-50%, -50%);
     pointer-events: none;
-    animation: dragCuePulse 1.9s ease-in-out infinite;
+    text-shadow: 0 2px 8px rgba(23, 35, 41, 0.38), 0 0 2px rgba(23, 35, 41, 0.4);
   }
 
-  .dragCueArrow {
-    font-size: 0.95rem;
+  .tubHudValue {
+    font-size: clamp(2.2rem, 9vw, 3rem);
+    font-weight: 700;
     line-height: 1;
-    opacity: 0.8;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
   }
 
-  .dragCueLabel {
+  .tubHudStatus {
+    font-family: var(--bn-font-body);
     font-size: 0.82rem;
+    font-weight: 600;
     line-height: 1.1;
-    white-space: nowrap;
-  }
-}
-
-@keyframes dragCuePulse {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
+    letter-spacing: 0.02em;
     opacity: 0.95;
   }
-  50% {
-    transform: translate(-50%, -52%) scale(1.03);
-    opacity: 1;
+
+  .fillBadge {
+    display: none;
+  }
+
+  .interactionHint {
+    display: none;
   }
 }
 
@@ -396,43 +391,6 @@
 
   .tiltPauseFabLeverClosed {
     transform: rotate(0deg);
-  }
-}
-
-@media (min-width: 901px) {
-  .dragCue {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 4;
-    display: grid;
-    justify-items: center;
-    gap: 0.18rem;
-    padding: 0.5rem 0.85rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--bn-green-800);
-    font-family: var(--bn-font-body);
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    box-shadow: 0 10px 24px rgba(36, 63, 72, 0.14);
-    backdrop-filter: blur(10px);
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    animation: dragCuePulse 1.9s ease-in-out infinite;
-  }
-
-  .dragCueArrow {
-    font-size: 0.95rem;
-    line-height: 1;
-    opacity: 0.8;
-  }
-
-  .dragCueLabel {
-    font-size: 0.82rem;
-    line-height: 1.1;
-    white-space: nowrap;
   }
 }
 

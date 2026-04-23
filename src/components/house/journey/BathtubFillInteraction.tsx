@@ -293,13 +293,11 @@ export default function BathtubFillInteraction() {
       : needsPermission
       ? 'Tippe auf „Neigung aktivieren“, um dein Smartphone als Sensor zu nutzen – oder ziehe das Wasser.'
       : 'Ziehe das Wasser nach oben oder unten.';
-  const cueCopy =
-    isDesktop
-      ? 'Ziehen'
-      : tiltState === 'enabled' && !tiltPaused
+  const hudStatus =
+    tiltState === 'enabled' && tiltPaused
+      ? 'gesperrt'
+      : tiltState === 'enabled'
       ? 'Smartphone kippen'
-      : tiltState === 'enabled' && tiltPaused
-      ? 'Gesperrt'
       : 'Ziehen';
   const selectedFrequency =
     BATH_FREQUENCIES.find((frequency) => frequency.id === bathFrequencyId) ?? BATH_FREQUENCIES[0];
@@ -401,13 +399,6 @@ export default function BathtubFillInteraction() {
         <span className={styles.fillBadge} aria-hidden="true">
           {fillLevel}%
         </span>
-        {!hasInteracted ? (
-          <div className={styles.dragCue} aria-hidden="true">
-            <span className={styles.dragCueArrow}>↑</span>
-            <span className={styles.dragCueLabel}>{cueCopy}</span>
-            <span className={styles.dragCueArrow}>↓</span>
-          </div>
-        ) : null}
         <div className={styles.bathtubShadow} aria-hidden="true" />
         <div className={styles.bathtubIllustration}>
           {tiltState === 'enabled' ? (
@@ -504,6 +495,10 @@ export default function BathtubFillInteraction() {
             alt=""
             className={styles.bathtubImage}
           />
+          <div className={styles.tubHud} aria-hidden="true">
+            <span className={styles.tubHudValue}>{fillLevel}%</span>
+            <span className={styles.tubHudStatus}>{hudStatus}</span>
+          </div>
         </div>
         <p
           id="bathtub-fill-hint"
@@ -531,8 +526,15 @@ export default function BathtubFillInteraction() {
               onClick={handleReset}
               aria-label="Wasserstand zurücksetzen"
             >
-              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false">
-                <path fillRule="evenodd" d="M7.793 2.232a.75.75 0 0 0-.001 1.06L9.045 5.5H3.5a1.5 1.5 0 0 0 0 3h3v1.5h-3a3 3 0 1 1 0-6h5.545L7.792 1.232a.75.75 0 0 0 1.06 1.06l3.5-3.5a.75.75 0 1 0-1.06-1.06l-3.5 3.5Z" clipRule="evenodd" />
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M4 9 L4 4 M4 9 L9 9 M4 9 C6.5 5.5 10.2 4 14 4.5 C18.4 5.1 21.5 8.5 21.5 13 C21.5 17.7 17.7 21.5 13 21.5 C8.9 21.5 5.4 18.5 4.7 14.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           ) : null}
