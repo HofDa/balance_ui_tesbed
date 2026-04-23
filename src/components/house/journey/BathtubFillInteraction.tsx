@@ -1,6 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-'use client';
-
 import { type KeyboardEvent, type PointerEvent, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { publicPath } from '@/lib/publicPath';
 import styles from './BathtubFillInteraction.module.css';
@@ -44,6 +41,7 @@ export default function BathtubFillInteraction() {
   const tiltSmoothedRef = useRef<number | null>(null);
   const hasUserInteractedRef = useRef(false);
   const [tiltPaused, setTiltPaused] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const updateFillLevel = useCallback((nextFillLevel: number) => {
     const clampedFillLevel = clampFillLevel(nextFillLevel);
@@ -106,32 +104,10 @@ export default function BathtubFillInteraction() {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    queueMicrotask(() => {
-      if (!isMounted) {
-        return;
-      }
-
-      if (typeof window === 'undefined' || !('DeviceOrientationEvent' in window)) {
-        setTiltState('unsupported');
-        return;
-      }
-
-      const orientationEvent = window.DeviceOrientationEvent as DeviceOrientationEventWithPermission;
-
-      if (typeof orientationEvent.requestPermission === 'function') {
-        setNeedsPermission(true);
-      } else {
-        tiltBaselineRef.current = null;
-        tiltFillBaselineRef.current = fillLevelRef.current;
-        setTiltState('enabled');
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth > 900);
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
 
   useEffect(() => {
@@ -304,19 +280,23 @@ export default function BathtubFillInteraction() {
   }, [tiltState, tiltPaused, updateFillLevel]);
 
   const statusCopy =
-    tiltState === 'enabled' && tiltPaused
+    isDesktop
+      ? 'Ziehe das Wasser nach oben oder unten.'
+      : tiltState === 'enabled' && tiltPaused
       ? 'Wasserstand gesperrt. Tippe erneut auf das Schloss, um ihn zu ändern.'
       : tiltState === 'enabled'
       ? 'Neigung aktiv – kippe dein Smartphone, um den Wasserstand zu ändern.'
       : tiltState === 'blocked'
       ? 'Zugriff auf die Neigung wurde abgelehnt. Bitte in den Safari-Einstellungen unter „Bewegung & Ausrichtung“ erlauben.'
       : tiltState === 'unsupported'
-      ? 'Neigung ist auf diesem Gerät nicht verfügbar. Ziehe die Wanne nach oben oder unten.'
+      ? 'Neigung ist auf diesem Gerät nicht verfügbar. Ziehe das Wasser nach oben oder unten.'
       : needsPermission
-      ? 'Tippe auf „Neigung aktivieren“, um dein Smartphone als Sensor zu nutzen – oder ziehe die Wanne.'
-      : 'Ziehe die Wanne nach oben oder unten.';
+      ? 'Tippe auf „Neigung aktivieren“, um dein Smartphone als Sensor zu nutzen – oder ziehe das Wasser.'
+      : 'Ziehe das Wasser nach oben oder unten.';
   const cueCopy =
-    tiltState === 'enabled' && !tiltPaused
+    isDesktop
+      ? 'Ziehen'
+      : tiltState === 'enabled' && !tiltPaused
       ? 'Smartphone kippen'
       : tiltState === 'enabled' && tiltPaused
       ? 'Gesperrt'
@@ -535,7 +515,7 @@ export default function BathtubFillInteraction() {
 
       <div className={styles.hintRow}>
         <div className={styles.actionButtons}>
-          {needsPermission && tiltState !== 'enabled' ? (
+          {!isDesktop && needsPermission && tiltState !== 'enabled' ? (
             <button
               type="button"
               className={styles.tiltPermissionButton}
@@ -551,7 +531,12 @@ export default function BathtubFillInteraction() {
               onClick={handleReset}
               aria-label="Wasserstand zurücksetzen"
             >
-              Zurücksetzen
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 4A8 8 0 1 1 4 12A8 8 0 0 1 12 4M11 6V8H9V10H11V12L14 9L11 6Z"
+                  fill="currentColor"
+                />
+              </svg>
             </button>
           ) : null}
         </div>

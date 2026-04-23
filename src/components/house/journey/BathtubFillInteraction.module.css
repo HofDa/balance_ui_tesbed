@@ -345,6 +345,60 @@
   }
 }
 
+@media (min-width: 901px) {
+  .tiltPauseFab {
+    position: absolute;
+    left: 10%;
+    top: 22%;
+    z-index: 5;
+    display: block;
+    width: 3rem;
+    height: 2.15rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #172329;
+    cursor: pointer;
+    filter: drop-shadow(0 1.5px 0 rgba(23, 35, 41, 0.18));
+    transform: translate(-50%, -50%);
+    transition: transform 160ms ease;
+  }
+
+  .tiltPauseFab:active {
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  .tiltPauseFabSvg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .tiltPauseFab:focus-visible {
+    outline: none;
+  }
+
+  .tiltPauseFab:focus-visible .tiltPauseFabSvg {
+    filter: drop-shadow(0 0 0 3px rgba(90, 174, 198, 0.6));
+  }
+
+  .tiltPauseFab[aria-pressed='true'] .tiltPauseFabBody {
+    fill: #ffe3ba;
+  }
+
+  .tiltPauseFabLever {
+    transform-box: fill-box;
+    transform-origin: 100% 50%;
+    transform: rotate(35deg);
+    transition: transform 260ms cubic-bezier(0.5, 0.1, 0.2, 1.1);
+  }
+
+  .tiltPauseFabLeverClosed {
+    transform: rotate(0deg);
+  }
+}
+
 .bathtubShadow {
   position: absolute;
   left: 17%;
@@ -423,32 +477,42 @@
 }
 
 .resetButton {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 6;
   appearance: none;
   border: 1px solid rgba(63, 104, 114, 0.26);
   border-radius: 999px;
-  padding: 0.46rem 1rem;
+  padding: 0.5rem;
   background: rgba(255, 255, 255, 0.72);
   color: var(--bn-green-800);
-  font-family: var(--bn-font-body);
-  font-size: 0.85rem;
-  font-weight: 600;
   cursor: pointer;
   transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
 }
 
 .resetButton:hover {
-  transform: translateY(-1px);
+  transform: scale(1.05);
   background: rgba(244, 250, 251, 0.92);
   border-color: rgba(49, 126, 158, 0.4);
 }
 
 .resetButton:active {
-  transform: translateY(0);
+  transform: scale(0.95);
 }
 
 .resetButton:focus-visible {
   outline: 3px solid rgba(90, 174, 198, 0.32);
   outline-offset: 2px;
+}
+
+.resetButton svg {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .interactionHintMuted {
