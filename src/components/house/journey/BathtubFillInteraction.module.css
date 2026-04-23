@@ -399,6 +399,43 @@
   }
 }
 
+@media (min-width: 901px) {
+  .dragCue {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 4;
+    display: grid;
+    justify-items: center;
+    gap: 0.18rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--bn-green-800);
+    font-family: var(--bn-font-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 10px 24px rgba(36, 63, 72, 0.14);
+    backdrop-filter: blur(10px);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: dragCuePulse 1.9s ease-in-out infinite;
+  }
+
+  .dragCueArrow {
+    font-size: 0.95rem;
+    line-height: 1;
+    opacity: 0.8;
+  }
+
+  .dragCueLabel {
+    font-size: 0.82rem;
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+}
+
 .bathtubShadow {
   position: absolute;
   left: 17%;
@@ -479,7 +516,7 @@
 .resetButton {
   position: absolute;
   left: 10px;
-  top: 10px;
+  bottom: 10px;
   z-index: 6;
   appearance: none;
   border: 1px solid rgba(63, 104, 114, 0.26);

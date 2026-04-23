@@ -533,8 +533,12 @@ export default function BathtubFillInteraction() {
             >
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path
-                  d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M12 4A8 8 0 1 1 4 12A8 8 0 0 1 12 4M11 6V8H9V10H11V12L14 9L11 6Z"
-                  fill="currentColor"
+                  d="M7 7H4v3m0-6h10a7 7 0 1 1 -1.17 13.9"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </button>
